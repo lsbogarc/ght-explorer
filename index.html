@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: #f9fafb; }
@@ -20,33 +20,20 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        /**
-         * GHT Explorer: Interactive Migration Simulator
-         * Copyright (C) 2026 Luis Bobo
-         * Code License: MIT | Research Content (Paper): CC-BY-4.0
-         * Part of "The Global Hydro-Logic Tectonic (GHT)" Project
-         * DOI: 10.5281/zenodo.18370723
-         */
-
         const { useState, useEffect } = React;
-
-        // --- STANDALONE STABILITY OPTIMIZATION ---
-        // Safely extract icons from the global Lucide object for standalone browser use
-        const Globe = window.lucide?.icons?.Globe || (() => null);
-        const Waves = window.lucide?.icons?.Waves || (() => null);
-        const Calculator = window.lucide?.icons?.Calculator || (() => null);
-        const Info = window.lucide?.icons?.Info || (() => null);
-        const Zap = window.lucide?.icons?.Zap || (() => null);
-        const FlaskConical = window.lucide?.icons?.FlaskConical || (() => null);
-        const BookOpen = window.lucide?.icons?.BookOpen || (() => null);
-        const Target = window.lucide?.icons?.Target || (() => null);
-        // ------------------------------------------
 
         const GHTExplorer = () => {
             const [activeTab, setActiveTab] = useState('manifesto');
             const [M, setM] = useState(0.40);
             const [T, setT] = useState(0.80);
             const [S, setS] = useState(0.95);
+
+            // Dynamically get icons from the global 'lucide' object
+            // This prevents crashes if the script loads slightly out of order
+            const Ico = (name) => {
+                const IconComponent = window.lucide?.icons[name] || window.lucide?.[name] || (() => <span>?</span>);
+                return <IconComponent size={activeTab === 'manifesto' ? 24 : 18} className="inline-block" />;
+            };
 
             const calculateIi = () => ((M + T) / (1 + S)) - 1;
 
@@ -58,18 +45,18 @@
             };
 
             const pulses = [
-                { id: 'seed', name: 'Acoustic Seed', color: 'bg-green-500', peak: '~15,000 BCE', description: 'Deep-time maritime expansion. High-resolution phonetic toolkit (Tonal, Ergative, SOV). Prioritized coastal corridors.', examples: 'Arawak, Pre-Mayan, Khoisan, Ket', tech: 'Fire-Hollowed (Fiber Tension)' },
+                { id: 'seed', name: 'Acoustic Seed', color: 'bg-green-500', peak: '~15,000 BCE', description: 'Deep-time maritime expansion. High-resolution phonetic toolkit (Tonal, Ergative, SOV).', examples: 'Arawak, Pre-Mayan, Khoisan, Ket', tech: 'Fire-Hollowed (Fiber Tension)' },
                 { id: 'wedge', name: 'Structural Wedge', color: 'bg-yellow-500', peak: '~4,000 BCE', description: 'Continental inland expansion. Administrative simplification. Generated "Refuge Forcing" pressure.', examples: 'Indo-European, Semitic, Sino-Tibetan', tech: 'Plank-and-Nail (Rigid Frame)' },
-                { id: 'domino', name: 'Domino Pulse', color: 'bg-red-500', peak: '~1,500 CE', description: 'High-velocity standardization. Polysynthesis. Total "flattening" of linguistic diversity for logistical velocity.', examples: 'Eskaleut, Inca, Bantu, Polynesian', tech: 'High-Volume Logistical Fleets' }
+                { id: 'domino', name: 'Domino Pulse', color: 'bg-red-500', peak: '~1,500 CE', description: 'High-velocity standardization. Polysynthesis. Total "flattening" of linguistic diversity.', examples: 'Eskaleut, Inca, Bantu, Polynesian', tech: 'High-Volume Logistical Fleets' }
             ];
 
             const predictions = [
-                { category: "Archaeometallurgy", test: "Lead Isotope Analysis (LA-MC-ICP-MS)", prediction: "Caribbean Guanín artifacts will show Sahelian cratonic signatures (Birimian/Pan-African formations)", status: "not-tested", impact: "Critical" },
-                { category: "Paleogenomics", test: "ARG inference", prediction: "Shared 'Basal Seed' segment-branching between Sahel and Antilles populations", status: "not-tested", impact: "High" },
-                { category: "Linguistics", test: "Humidity correlation mapping", prediction: "Tonal stability coefficient r > 0.8 in refuges with >15 g/m³ humidity", status: "in-progress", impact: "Moderate" },
-                { category: "Maritime Archaeology", test: "Fiber-tension vessel remains", prediction: "Discovery of pre-1500 BCE organic maritime technology in Amazon contexts", status: "not-tested", impact: "High" },
-                { category: "Genomics", test: "Population Y mapping", prediction: "Highest concentration in Amazonian/Gê refuges, absent in Beringian corridor", status: "confirmed", impact: "Critical" },
-                { category: "Hydro-dynamics", test: "Current-vector modeling", prediction: "P > 0.95 landfall probability for Canary Current → Antilles route", status: "confirmed", impact: "Moderate" }
+                { category: "Archaeometallurgy", test: "Lead Isotope Analysis", prediction: "Caribbean Guanín artifacts will show Sahelian cratonic signatures", status: "not-tested", impact: "Critical" },
+                { category: "Paleogenomics", test: "ARG inference", prediction: "Shared 'Basal Seed' segment-branching between Sahel and Antilles", status: "not-tested", impact: "High" },
+                { category: "Linguistics", test: "Humidity correlation", prediction: "Tonal stability coefficient r > 0.8 in refuges with >15 g/m³ humidity", status: "in-progress", impact: "Moderate" },
+                { category: "Maritime", test: "Fiber-tension vessel remains", prediction: "Organic maritime technology in Amazonian contexts pre-1500 BCE", status: "not-tested", impact: "High" },
+                { category: "Genomics", test: "Population Y mapping", prediction: "Highest concentration in Amazonian/Gê refuges, absent in Beringia", status: "confirmed", impact: "Critical" },
+                { category: "Hydro-dynamics", test: "Current-vector modeling", prediction: "P > 0.95 landfall probability for Canary Current → Antilles", status: "confirmed", impact: "Moderate" }
             ];
 
             return (
@@ -77,7 +64,7 @@
                     <nav className="bg-white shadow-md sticky top-0 z-50 p-4 border-b border-gray-100">
                         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
                             <div className="flex items-center space-x-2">
-                                <Globe className="text-blue-600" size={28} />
+                                <span className="text-blue-600">{Ico('Globe')}</span>
                                 <span className="font-bold text-2xl tracking-tight text-gray-800">GHT Explorer</span>
                             </div>
                             <div className="flex flex-wrap justify-center gap-1 md:gap-2">
@@ -100,23 +87,23 @@
                                     <p className="text-xl text-gray-500 font-medium tracking-widest uppercase">A Compass, Not a Map</p>
                                 </div>
                                 <div className="bg-white border-l-8 border-blue-600 p-8 rounded-xl shadow-lg">
-                                    <h2 className="text-2xl font-bold text-blue-900 mb-4 flex items-center"><Info className="mr-3" /> The Vision</h2>
+                                    <h2 className="text-2xl font-bold text-blue-900 mb-4 flex items-center">{Ico('Info')} <span className="ml-2">The Vision</span></h2>
                                     <p className="text-lg text-gray-700 leading-relaxed mb-4">
                                         Human migration is not a series of random accidents, but a <span className="font-bold">pulsed, mechanical process</span> dictated by a deep-time human-environment interface.
                                     </p>
                                     <p className="text-lg text-gray-700 leading-relaxed">
-                                        The GHT model treats populations as integrated systems of <span className="text-blue-600 font-mono font-bold">"Hardware"</span> (genetics) and <span className="text-green-600 font-mono font-bold">"Software"</span> (metadata).
+                                        The GHT model treats populations as integrated systems of <span className="text-blue-600 font-mono font-bold">"Hardware"</span> and <span className="text-green-600 font-mono font-bold">"Software"</span>.
                                     </p>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     {pulses.map((pulse) => (
                                         <div key={pulse.id} className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all">
-                                            <div className={`${pulse.color} w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mb-4 shadow-inner`}>
+                                            <div className={`${pulse.color} w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mb-4`}>
                                                 {pulse.peak.match(/\d+/)[0]}
                                             </div>
                                             <h3 className="text-xl font-bold mb-2">{pulse.name}</h3>
                                             <p className="text-sm text-gray-600 leading-relaxed mb-4">{pulse.description}</p>
-                                            <div className="pt-4 border-t border-gray-100 text-xs text-gray-500 space-y-1">
+                                            <div className="pt-4 border-t border-gray-100 text-xs text-gray-500">
                                                 <p><strong>Peak:</strong> {pulse.peak}</p>
                                                 <p><strong>Tech:</strong> {pulse.tech}</p>
                                             </div>
@@ -142,11 +129,11 @@
                                     </div>
                                     <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="p-4 bg-blue-50 rounded-lg flex items-start">
-                                            <Waves className="text-blue-600 mr-3 shrink-0" />
+                                            <span className="text-blue-600 mr-3">{Ico('Waves')}</span>
                                             <p className="text-sm"><strong>North Pacific:</strong> SE Asia → Americas corridor via Kuroshio vector.</p>
                                         </div>
                                         <div className="p-4 bg-blue-50 rounded-lg flex items-start">
-                                            <Waves className="text-blue-600 mr-3 shrink-0" />
+                                            <span className="text-blue-600 mr-3">{Ico('Waves')}</span>
                                             <p className="text-sm"><strong>Canary Current:</strong> West Africa → Antilles high-probability route.</p>
                                         </div>
                                     </div>
@@ -171,7 +158,7 @@
                                                 <p className="text-sm text-gray-600 italic leading-snug">{pred.prediction}</p>
                                             </div>
                                             <div className="mt-4 pt-4 border-t border-gray-50 flex items-center text-xs text-gray-400">
-                                                <Zap size={12} className="mr-1" /> Impact: {pred.impact}
+                                                {Ico('Zap')} <span className="ml-1">Impact: {pred.impact}</span>
                                             </div>
                                         </div>
                                     ))}
@@ -183,30 +170,21 @@
                             <div className="max-w-3xl mx-auto">
                                 <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
                                     <div className="bg-blue-600 p-8 text-white">
-                                        <h2 className="text-2xl font-bold flex items-center"><Calculator className="mr-3" /> Impregnation Index (Ii)</h2>
+                                        <h2 className="text-2xl font-bold flex items-center">{Ico('Calculator')} <span className="ml-2">Impregnation Index (Ii)</span></h2>
                                         <p className="opacity-80 text-sm mt-1">Quantifying the mechanical friction of population contact.</p>
                                     </div>
                                     <div className="p-8 space-y-10">
                                         <div className="space-y-8">
                                             <div className="space-y-4">
-                                                <div className="flex justify-between font-bold text-gray-700">
-                                                    <span>Mass (M)</span>
-                                                    <span className="text-blue-600 font-mono">{M.toFixed(2)}</span>
-                                                </div>
+                                                <div className="flex justify-between font-bold text-gray-700"><span>Mass (M)</span><span className="text-blue-600 font-mono">{M.toFixed(2)}</span></div>
                                                 <input type="range" min="0" max="1" step="0.01" value={M} onChange={e => setM(parseFloat(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
                                             </div>
                                             <div className="space-y-4">
-                                                <div className="flex justify-between font-bold text-gray-700">
-                                                    <span>Technology (T)</span>
-                                                    <span className="text-blue-600 font-mono">{T.toFixed(2)}</span>
-                                                </div>
+                                                <div className="flex justify-between font-bold text-gray-700"><span>Technology (T)</span><span className="text-blue-600 font-mono">{T.toFixed(2)}</span></div>
                                                 <input type="range" min="0" max="1" step="0.01" value={T} onChange={e => setT(parseFloat(e.target.value))} className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer" />
                                             </div>
                                             <div className="space-y-4">
-                                                <div className="flex justify-between font-bold text-gray-700">
-                                                    <span>Synchronization (S)</span>
-                                                    <span className="text-blue-600 font-mono">{S.toFixed(2)}</span>
-                                                </div>
+                                                <div className="flex justify-between font-bold text-gray-700"><span>Synchronization (S)</span><span className="text-blue-600 font-mono">{S.toFixed(2)}</span></div>
                                                 <input type="range" min="0" max="1" step="0.01" value={S} onChange={e => setS(parseFloat(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
                                             </div>
                                         </div>
@@ -230,12 +208,10 @@
                                 <h3 className="text-lg font-bold tracking-tight uppercase">The Global Hydro-Logic Tectonic</h3>
                                 <p className="text-sm text-gray-400 font-mono mt-1 underline decoration-blue-500 underline-offset-4">DOI: 10.5281/zenodo.18370723</p>
                             </div>
-                            <div className="pt-8 border-t border-gray-800">
-                                <p className="text-xs text-gray-500 italic leading-relaxed max-w-2xl mx-auto">
-                                    "This model invites 21st-century science to investigate before the original 'Seed' software 
-                                    of our species is permanently overprinted by global logistical homogenization."
-                                </p>
-                            </div>
+                            <p className="text-xs text-gray-500 italic max-w-2xl mx-auto italic">
+                                "This model invites 21st-century science to investigate before the original 'Seed' software 
+                                of our species is permanently overprinted by global logistical homogenization."
+                            </p>
                             <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">
                                 Luis Bobo &copy; 2026 | MIT & CC-BY-4.0
                             </p>
@@ -245,8 +221,12 @@
             );
         };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<GHTExplorer />);
+        // Render with safety check
+        const mountNode = document.getElementById('root');
+        if (mountNode) {
+            const root = ReactDOM.createRoot(mountNode);
+            root.render(<GHTExplorer />);
+        }
     </script>
 </body>
 </html>
