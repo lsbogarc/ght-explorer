@@ -3,20 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GHT Explorer: Interactive Migration Simulator</title>
+    <title>GHT Explorer: Full Research Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background-color: #f9fafb; }
-        .animate-fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gaussian-curve {
+            border-top-left-radius: 100%;
+            border-top-right-radius: 100%;
+            transform-origin: bottom;
+            filter: blur(20px);
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pillar-card { transition: all 0.3s ease; }
+        .pillar-card:hover { transform: translateY(-8px); shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        input[type="range"] { accent-color: #2563eb; cursor: pointer; }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-900">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -24,209 +32,171 @@
 
         const GHTExplorer = () => {
             const [activeTab, setActiveTab] = useState('manifesto');
-            const [M, setM] = useState(0.40);
-            const [T, setT] = useState(0.80);
+            const [activePulse, setActivePulse] = useState('all');
+            const [M, setM] = useState(0.4);
+            const [T, setT] = useState(0.8);
             const [S, setS] = useState(0.95);
 
-            // Dynamically get icons from the global 'lucide' object
-            // This prevents crashes if the script loads slightly out of order
-            const Ico = (name) => {
-                const IconComponent = window.lucide?.icons[name] || window.lucide?.[name] || (() => <span>?</span>);
-                return <IconComponent size={activeTab === 'manifesto' ? 24 : 18} className="inline-block" />;
-            };
+            // Trigger Lucide icons on state change
+            useEffect(() => { 
+                if (window.lucide) {
+                    window.lucide.createIcons(); 
+                }
+            }, [activeTab, activePulse]);
 
             const calculateIi = () => ((M + T) / (1 + S)) - 1;
 
             const getIiInterpretation = (ii) => {
-                if (ii >= 0.5) return { label: "Overprint & Displacement", color: "text-red-600", desc: "High-friction overprint. Incoming system achieves displacement." };
-                if (ii >= 0) return { label: "Steady-State Harmonization", color: "text-yellow-600", desc: "Moderate friction. Results in 'Melting Pot' hybridization." };
-                if (ii >= -0.5) return { label: "Absorption / Handshake", color: "text-green-600", desc: "Low-friction 'Software Update.' Technical metadata integrated." };
-                return { label: "Rejection / Write-Back", color: "text-blue-600", desc: "Total host dominance. Incoming pulse absorbed or expelled." };
+                if (ii >= 0.5) return { label: "Overprint & Displacement", color: "text-red-600", bg: "bg-red-50", desc: "High-friction overprint. Incoming system achieves hardware displacement." };
+                if (ii >= 0) return { label: "Steady-State Harmonization", color: "text-yellow-600", bg: "bg-yellow-50", desc: "Moderate friction. Results in 'Melting Pot' metadata hybridization." };
+                if (ii >= -0.5) return { label: "Absorption / Handshake", color: "text-green-600", bg: "bg-green-50", desc: "Low-friction 'Software Update.' Technical metadata integrated seamlessly." };
+                return { label: "Rejection / Write-Back", color: "text-blue-600", bg: "bg-blue-50", desc: "Total host dominance. Incoming pulse is absorbed or expelled." };
             };
 
             const pulses = [
-                { id: 'seed', name: 'Acoustic Seed', color: 'bg-green-500', peak: '~15,000 BCE', description: 'Deep-time maritime expansion. High-resolution phonetic toolkit (Tonal, Ergative, SOV).', examples: 'Arawak, Pre-Mayan, Khoisan, Ket', tech: 'Fire-Hollowed (Fiber Tension)' },
-                { id: 'wedge', name: 'Structural Wedge', color: 'bg-yellow-500', peak: '~4,000 BCE', description: 'Continental inland expansion. Administrative simplification. Generated "Refuge Forcing" pressure.', examples: 'Indo-European, Semitic, Sino-Tibetan', tech: 'Plank-and-Nail (Rigid Frame)' },
-                { id: 'domino', name: 'Domino Pulse', color: 'bg-red-500', peak: '~1,500 CE', description: 'High-velocity standardization. Polysynthesis. Total "flattening" of linguistic diversity.', examples: 'Eskaleut, Inca, Bantu, Polynesian', tech: 'High-Volume Logistical Fleets' }
+                { id: 'seed', name: 'Acoustic Seed', color: 'bg-green-500', peak: '~15,000 BCE', desc: 'Maritime expansion. High-res phonetics.' },
+                { id: 'wedge', name: 'Structural Wedge', color: 'bg-yellow-500', peak: '~4,000 BCE', desc: 'Continental inland administrative growth.' },
+                { id: 'domino', name: 'Domino Pulse', color: 'bg-red-500', peak: '~1,500 CE', desc: 'Logistical velocity and diversity flattening.' }
             ];
 
-            const predictions = [
-                { category: "Archaeometallurgy", test: "Lead Isotope Analysis", prediction: "Caribbean Guanín artifacts will show Sahelian cratonic signatures", status: "not-tested", impact: "Critical" },
-                { category: "Paleogenomics", test: "ARG inference", prediction: "Shared 'Basal Seed' segment-branching between Sahel and Antilles", status: "not-tested", impact: "High" },
-                { category: "Linguistics", test: "Humidity correlation", prediction: "Tonal stability coefficient r > 0.8 in refuges with >15 g/m³ humidity", status: "in-progress", impact: "Moderate" },
-                { category: "Maritime", test: "Fiber-tension vessel remains", prediction: "Organic maritime technology in Amazonian contexts pre-1500 BCE", status: "not-tested", impact: "High" },
-                { category: "Genomics", test: "Population Y mapping", prediction: "Highest concentration in Amazonian/Gê refuges, absent in Beringia", status: "confirmed", impact: "Critical" },
-                { category: "Hydro-dynamics", test: "Current-vector modeling", prediction: "P > 0.95 landfall probability for Canary Current → Antilles", status: "confirmed", impact: "Moderate" }
-            ];
+            const ManifestoView = () => (
+                <div className="max-w-4xl mx-auto p-6 space-y-8 animate-in fade-in duration-700">
+                    <header className="text-center py-10">
+                        <h1 className="text-6xl font-black bg-gradient-to-r from-blue-700 to-emerald-600 bg-clip-text text-transparent mb-4">GHT EXPLORER</h1>
+                        <p className="text-xl text-gray-400 uppercase tracking-[0.2em] font-light">Global Hydro-Logic Tectonic Model</p>
+                    </header>
+                    <div className="bg-white p-10 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
+                        <div className="relative z-10">
+                            <h2 className="text-2xl font-black text-blue-900 mb-4 flex items-center gap-3">
+                                <i data-lucide="waves"></i> The Mechanical Vision
+                            </h2>
+                            <p className="text-lg leading-relaxed text-gray-700 mb-6 italic">
+                                "Humanity moves in quantifiable waves. By decoupling biological 'Hardware' from cultural 'Software,' we solve anomalies that isolationist archaeology ignores."
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                                <div className="p-6 bg-blue-50 rounded-2xl border-l-4 border-blue-500">
+                                    <h4 className="font-black text-blue-700 mb-1">HARDWARE</h4>
+                                    <p className="text-sm text-gray-600">DNA, skeletal remains, caloric inputs. Highly perishable and rapidly diluted.</p>
+                                </div>
+                                <div className="p-6 bg-emerald-50 rounded-2xl border-l-4 border-emerald-500">
+                                    <h4 className="font-black text-emerald-700 mb-1">SOFTWARE</h4>
+                                    <p className="text-sm text-gray-600">Phonetics, metallurgy, navigational logic. Highly resilient and diagnostic.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const ModelView = () => (
+                <div className="max-w-6xl mx-auto p-6 space-y-8 animate-in zoom-in duration-500">
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-3xl font-black tracking-tight">Temporal Distribution</h2>
+                        <div className="flex gap-2 bg-gray-200 p-1 rounded-2xl">
+                            <button onClick={() => setActivePulse('all')} className={`px-6 py-2 rounded-xl text-xs font-black transition-all ${activePulse === 'all' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>ALL</button>
+                            {pulses.map(p => (
+                                <button key={p.id} onClick={() => setActivePulse(p.id)} className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${activePulse === p.id ? p.color + ' text-white' : 'text-gray-500 hover:text-gray-700'}`}>{p.name.split(' ')[0].toUpperCase()}</button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="bg-white p-12 rounded-[3rem] shadow-2xl relative overflow-hidden h-[450px] border border-gray-100">
+                        <div className="absolute inset-0 flex items-end justify-around px-20">
+                            {(activePulse === 'all' || activePulse === 'seed') && <div className="gaussian-curve w-1/2 h-[45%] bg-green-500/20 border-t-4 border-green-500/50"></div>}
+                            {(activePulse === 'all' || activePulse === 'wedge') && <div className="gaussian-curve w-1/3 h-[75%] bg-yellow-500/20 border-t-4 border-yellow-500/50 -translate-x-20"></div>}
+                            {(activePulse === 'all' || activePulse === 'domino') && <div className="gaussian-curve w-1/4 h-[95%] bg-red-500/20 border-t-4 border-red-500/50 -translate-x-40"></div>}
+                        </div>
+                        <div className="absolute bottom-16 left-10 right-10 h-px bg-gray-200"></div>
+                        <div className="absolute bottom-8 left-10 right-10 flex justify-between text-[10px] font-black text-gray-400 tracking-widest uppercase">
+                            <span>50k BCE</span><span>25k BCE</span><span>10k BCE</span><span>5k BCE</span><span>1.5k CE</span><span>PRESENT</span>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const EvidenceView = () => (
+                <div className="max-w-6xl mx-auto p-6 space-y-12">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            {title: "Linguistics", icon: "book-open", color: "blue", body: "Tracking 'Acoustic Seed' metadata through humidity-tonality correlations."},
+                            {title: "Genomics", icon: "dna", color: "emerald", body: "Identifying 'Population Y' isolates that bypass the Beringian route."},
+                            {title: "Metallurgy", icon: "flask-conical", color: "orange", body: "Guanín 'Chemical Handshake' - 18% Au-Ag-Cu eutectic ratios."}
+                        ].map((p, i) => (
+                            <div key={i} className={`pillar-card bg-white p-10 rounded-3xl shadow-lg border-b-8 border-${p.color}-500`}>
+                                <i data-lucide={p.icon} className={`text-${p.color}-500 w-12 h-12 mb-6`}></i>
+                                <h3 className="text-2xl font-black mb-4">{p.title}</h3>
+                                <p className="text-gray-500 leading-relaxed">{p.body}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="bg-gray-900 text-white p-12 rounded-[2.5rem] relative overflow-hidden">
+                        <div className="relative z-10 grid md:grid-cols-2 gap-10 items-center">
+                            <div>
+                                <h3 className="text-3xl font-black mb-4 flex items-center gap-3"><i data-lucide="map"></i> Hydro-Logic Highways</h3>
+                                <p className="text-gray-400 text-lg">Predictable oceanographic conveyors serving as permanent human synchronization routes.</p>
+                            </div>
+                            <div className="grid grid-cols-1 gap-4 text-sm font-mono uppercase tracking-tighter">
+                                <div className="flex justify-between border-b border-gray-700 py-2"><span>Canary Current</span><span className="text-blue-400">Sahel → Antilles</span></div>
+                                <div className="flex justify-between border-b border-gray-700 py-2"><span>Kuroshio</span><span className="text-blue-400">SE Asia → NW Coast</span></div>
+                                <div className="flex justify-between border-b border-gray-700 py-2"><span>S. Equatorial</span><span className="text-blue-400">Sumatra → Madagascar</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const TestView = () => {
+                const interp = getIiInterpretation(calculateIi());
+                return (
+                    <div className="max-w-5xl mx-auto p-6 space-y-12">
+                        <div className="bg-white p-12 rounded-[3rem] shadow-xl border border-gray-100">
+                            <h3 className="text-3xl font-black mb-12 flex items-center gap-4"><i data-lucide="calculator" className="text-blue-600"></i> Impregnation Index (Ii)</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+                                {[[M, setM, "Mass (Demographics)"], [T, setT, "Tech (Complexity)"], [S, setS, "Sync (Compatibility)"]].map(([val, setter, label]) => (
+                                    <div key={label} className="space-y-4">
+                                        <div className="flex justify-between font-black text-xs text-gray-400 uppercase tracking-widest">
+                                            <label>{label}</label>
+                                            <span className="text-blue-600 text-lg">{val}</span>
+                                        </div>
+                                        <input type="range" min="0" max="1" step="0.05" value={val} onChange={e=>setter(parseFloat(e.target.value))} className="w-full" />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className={`p-12 rounded-[2rem] text-center transition-all duration-700 ${interp.bg}`}>
+                                <div className={`text-8xl font-black mb-4 ${interp.color}`}>{calculateIi().toFixed(2)}</div>
+                                <div className="text-3xl font-black text-gray-900 mb-2 uppercase">{interp.label}</div>
+                                <p className="text-gray-500 max-w-lg mx-auto text-lg leading-relaxed">{interp.desc}</p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
 
             return (
-                <div className="min-h-screen flex flex-col">
-                    <nav className="bg-white shadow-md sticky top-0 z-50 p-4 border-b border-gray-100">
-                        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                            <div className="flex items-center space-x-2">
-                                <span className="text-blue-600">{Ico('Globe')}</span>
-                                <span className="font-bold text-2xl tracking-tight text-gray-800">GHT Explorer</span>
+                <div className="min-h-screen pb-20">
+                    <nav className="bg-white/70 backdrop-blur-xl sticky top-0 z-50 border-b border-gray-100 p-5">
+                        <div className="max-w-7xl mx-auto flex justify-between items-center">
+                            <div className="flex items-center gap-2 font-black text-blue-600 tracking-tighter text-2xl uppercase">
+                                <i data-lucide="globe"></i> GHT EXPLORER
                             </div>
-                            <div className="flex flex-wrap justify-center gap-1 md:gap-2">
+                            <div className="flex gap-2 bg-gray-100 p-1.5 rounded-2xl">
                                 {['manifesto', 'model', 'evidence', 'test'].map(t => (
-                                    <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${activeTab === t ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}>
-                                        {t === 'test' ? 'Test the Model' : t}
-                                    </button>
+                                    <button key={t} onClick={()=>setActiveTab(t)} className={`px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${activeTab === t ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}>{t}</button>
                                 ))}
                             </div>
                         </div>
                     </nav>
-
-                    <main className="flex-grow py-8 px-4 animate-fade-in">
-                        {activeTab === 'manifesto' && (
-                            <div className="max-w-4xl mx-auto space-y-10">
-                                <div className="text-center space-y-4">
-                                    <h1 className="text-4xl md:text-6xl font-black text-gray-900 leading-tight">
-                                        The Global <span className="text-blue-600 font-serif">Hydro-Logic</span> Tectonic
-                                    </h1>
-                                    <p className="text-xl text-gray-500 font-medium tracking-widest uppercase">A Compass, Not a Map</p>
-                                </div>
-                                <div className="bg-white border-l-8 border-blue-600 p-8 rounded-xl shadow-lg">
-                                    <h2 className="text-2xl font-bold text-blue-900 mb-4 flex items-center">{Ico('Info')} <span className="ml-2">The Vision</span></h2>
-                                    <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                                        Human migration is not a series of random accidents, but a <span className="font-bold">pulsed, mechanical process</span> dictated by a deep-time human-environment interface.
-                                    </p>
-                                    <p className="text-lg text-gray-700 leading-relaxed">
-                                        The GHT model treats populations as integrated systems of <span className="text-blue-600 font-mono font-bold">"Hardware"</span> and <span className="text-green-600 font-mono font-bold">"Software"</span>.
-                                    </p>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    {pulses.map((pulse) => (
-                                        <div key={pulse.id} className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all">
-                                            <div className={`${pulse.color} w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mb-4`}>
-                                                {pulse.peak.match(/\d+/)[0]}
-                                            </div>
-                                            <h3 className="text-xl font-bold mb-2">{pulse.name}</h3>
-                                            <p className="text-sm text-gray-600 leading-relaxed mb-4">{pulse.description}</p>
-                                            <div className="pt-4 border-t border-gray-100 text-xs text-gray-500">
-                                                <p><strong>Peak:</strong> {pulse.peak}</p>
-                                                <p><strong>Tech:</strong> {pulse.tech}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'model' && (
-                            <div className="max-w-5xl mx-auto space-y-8">
-                                <h2 className="text-3xl font-bold text-gray-900">Overlapping Gaussian Timeline</h2>
-                                <div className="bg-white rounded-3xl shadow-xl p-10 border border-gray-100">
-                                    <div className="relative h-64 bg-gray-50 rounded-2xl p-8 overflow-hidden flex items-end">
-                                        <div className="absolute inset-0 flex justify-around items-end opacity-20 pointer-events-none">
-                                            <div className="w-1/3 h-32 bg-green-500 rounded-t-full blur-3xl"></div>
-                                            <div className="w-1/3 h-48 bg-yellow-500 rounded-t-full blur-3xl"></div>
-                                            <div className="w-1/3 h-64 bg-red-500 rounded-t-full blur-3xl"></div>
-                                        </div>
-                                        <div className="z-10 w-full flex justify-between text-[10px] font-black text-gray-400 tracking-tighter uppercase">
-                                            <span>50,000 BCE</span><span>15,000 BCE</span><span>4,000 BCE</span><span>1,500 CE</span><span>PRESENT</span>
-                                        </div>
-                                    </div>
-                                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="p-4 bg-blue-50 rounded-lg flex items-start">
-                                            <span className="text-blue-600 mr-3">{Ico('Waves')}</span>
-                                            <p className="text-sm"><strong>North Pacific:</strong> SE Asia → Americas corridor via Kuroshio vector.</p>
-                                        </div>
-                                        <div className="p-4 bg-blue-50 rounded-lg flex items-start">
-                                            <span className="text-blue-600 mr-3">{Ico('Waves')}</span>
-                                            <p className="text-sm"><strong>Canary Current:</strong> West Africa → Antilles high-probability route.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'evidence' && (
-                            <div className="max-w-6xl mx-auto space-y-6">
-                                <h2 className="text-3xl font-bold text-gray-900">Metadata Triangulation</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {predictions.map((pred, i) => (
-                                        <div key={i} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between hover:border-blue-300 transition-colors">
-                                            <div>
-                                                <div className="flex justify-between items-start mb-2">
-                                                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">{pred.category}</span>
-                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${pred.status === 'confirmed' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                                                        {pred.status}
-                                                    </span>
-                                                </div>
-                                                <h4 className="font-bold text-gray-800 mb-2 leading-tight">{pred.test}</h4>
-                                                <p className="text-sm text-gray-600 italic leading-snug">{pred.prediction}</p>
-                                            </div>
-                                            <div className="mt-4 pt-4 border-t border-gray-50 flex items-center text-xs text-gray-400">
-                                                {Ico('Zap')} <span className="ml-1">Impact: {pred.impact}</span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'test' && (
-                            <div className="max-w-3xl mx-auto">
-                                <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
-                                    <div className="bg-blue-600 p-8 text-white">
-                                        <h2 className="text-2xl font-bold flex items-center">{Ico('Calculator')} <span className="ml-2">Impregnation Index (Ii)</span></h2>
-                                        <p className="opacity-80 text-sm mt-1">Quantifying the mechanical friction of population contact.</p>
-                                    </div>
-                                    <div className="p-8 space-y-10">
-                                        <div className="space-y-8">
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between font-bold text-gray-700"><span>Mass (M)</span><span className="text-blue-600 font-mono">{M.toFixed(2)}</span></div>
-                                                <input type="range" min="0" max="1" step="0.01" value={M} onChange={e => setM(parseFloat(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
-                                            </div>
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between font-bold text-gray-700"><span>Technology (T)</span><span className="text-blue-600 font-mono">{T.toFixed(2)}</span></div>
-                                                <input type="range" min="0" max="1" step="0.01" value={T} onChange={e => setT(parseFloat(e.target.value))} className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer" />
-                                            </div>
-                                            <div className="space-y-4">
-                                                <div className="flex justify-between font-bold text-gray-700"><span>Synchronization (S)</span><span className="text-blue-600 font-mono">{S.toFixed(2)}</span></div>
-                                                <input type="range" min="0" max="1" step="0.01" value={S} onChange={e => setS(parseFloat(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
-                                            </div>
-                                        </div>
-                                        <div className="bg-gray-50 rounded-2xl p-8 text-center border-2 border-dashed border-gray-200">
-                                            <p className="text-[10px] uppercase tracking-[0.2em] font-black text-gray-400 mb-2">Outcome Index (Ii)</p>
-                                            <p className={`text-8xl font-black mb-4 tracking-tighter ${getIiInterpretation(calculateIi()).color}`}>
-                                                {calculateIi().toFixed(2)}
-                                            </p>
-                                            <p className="text-2xl font-bold text-gray-900 mb-2">{getIiInterpretation(calculateIi()).label}</p>
-                                            <p className="text-gray-600 text-sm max-w-sm mx-auto">{getIiInterpretation(calculateIi()).desc}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                    <main className="mt-6">
+                        {activeTab === 'manifesto' && <ManifestoView />}
+                        {activeTab === 'model' && <ModelView />}
+                        {activeTab === 'evidence' && <EvidenceView />}
+                        {activeTab === 'test' && <TestView />}
                     </main>
-
-                    <footer className="bg-gray-900 text-white py-16 mt-12 border-t-4 border-blue-600">
-                        <div className="max-w-4xl mx-auto text-center px-6 space-y-8">
-                            <div>
-                                <h3 className="text-lg font-bold tracking-tight uppercase">The Global Hydro-Logic Tectonic</h3>
-                                <p className="text-sm text-gray-400 font-mono mt-1 underline decoration-blue-500 underline-offset-4">DOI: 10.5281/zenodo.18370723</p>
-                            </div>
-                            <p className="text-xs text-gray-500 italic max-w-2xl mx-auto italic">
-                                "This model invites 21st-century science to investigate before the original 'Seed' software 
-                                of our species is permanently overprinted by global logistical homogenization."
-                            </p>
-                            <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">
-                                Luis Bobo &copy; 2026 | MIT & CC-BY-4.0
-                            </p>
-                        </div>
-                    </footer>
                 </div>
             );
         };
 
-        // Render with safety check
-        const mountNode = document.getElementById('root');
-        if (mountNode) {
-            const root = ReactDOM.createRoot(mountNode);
-            root.render(<GHTExplorer />);
-        }
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<GHTExplorer />);
     </script>
 </body>
 </html>
