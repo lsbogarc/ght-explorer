@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GHT Explorer: Interactive Migration Simulator</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
     </style>
 </head>
 <body>
@@ -26,7 +26,7 @@
          * DOI: 10.5281/zenodo.18370723
          */
 
-        const { useState } = React;
+        const useState = React.useState;
         const { Globe, Waves, Target, FlaskConical, BookOpen, Calculator } = lucide;
 
         const GHTExplorer = () => {
@@ -52,106 +52,78 @@
             ];
 
             const predictions = [
-                { category: "Archaeometallurgy", test: "Lead Isotope Analysis (LA-MC-ICP-MS)", prediction: "Caribbean Guanín artifacts will show Sahelian cratonic signatures (Birimian/Pan-African formations)", status: "not-tested", impact: "Critical - Would confirm 'Chemical Handshake'" },
-                { category: "Paleogenomics", test: "Ancestral Recombination Graph (ARG) inference", prediction: "Shared 'Basal Seed' segment-branching between Sahel and Antilles populations", status: "not-tested", impact: "High - Would detect low-mass synchronization" },
-                { category: "Linguistics", test: "High-resolution humidity correlation mapping", prediction: "Tonal stability coefficient r > 0.8 in refuges with >15 g/m³ humidity", status: "in-progress", impact: "Moderate - Supports AAH integration" },
-                { category: "Maritime Archaeology", test: "Fiber-tension vessel remains in high-humidity refuges", prediction: "Discovery of pre-1500 BCE organic maritime technology in Amazon/SE Asian contexts", status: "not-tested", impact: "High - Direct hardware validation" },
-                { category: "Genomics", test: "Population Y distribution mapping", prediction: "Highest concentration in Amazonian/Gê refuges, absent in Beringian corridor", status: "confirmed", impact: "Critical - Already supports model" },
-                { category: "Hydro-dynamics", test: "Atlantic current-vector modeling", prediction: "P > 0.95 landfall probability for Canary Current → Antilles route", status: "confirmed", impact: "Moderate - Establishes plausibility" }
+                { category: "Archaeometallurgy", test: "Lead Isotope Analysis", prediction: "Caribbean Guanín artifacts will show Sahelian cratonic signatures.", status: "not-tested", impact: "Critical" },
+                { category: "Genomics", test: "Population Y mapping", prediction: "Highest concentration in Amazonian/Gê refuges, absent in Beringian corridor.", status: "confirmed", impact: "Critical" },
+                { category: "Linguistics", test: "Humidity correlation mapping", prediction: "Tonal stability coefficient r > 0.8 in high humidity refuges.", status: "in-progress", impact: "Moderate" }
             ];
 
             const ManifestoView = () => (
-                <div className="space-y-8 p-8 max-w-4xl mx-auto">
+                <div className="space-y-8 p-4 md:p-8 max-w-4xl mx-auto">
                     <div className="text-center space-y-4">
-                        <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">The Global Hydro-Logic Tectonic</h1>
-                        <p className="text-2xl text-gray-600 italic">A Compass, Not a Map</p>
+                        <h1 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">The Global Hydro-Logic Tectonic</h1>
+                        <p className="text-xl text-gray-600 italic">A Compass, Not a Map</p>
                     </div>
                     <div className="bg-blue-50 border-l-4 border-blue-600 p-6 rounded-r-lg">
                         <h2 className="text-2xl font-bold text-blue-900 mb-4">The Vision</h2>
-                        <p className="text-lg text-gray-800 leading-relaxed mb-4">Human migration is not a series of random accidents, but a <span className="font-semibold">pulsed, mechanical process</span> dictated by a deep-time human-environment interface.</p>
-                        <p className="text-lg text-gray-800 leading-relaxed">The GHT model treats populations as integrated systems of <span className="font-semibold">"Hardware"</span> (genetics) and <span className="font-semibold">"Software"</span> (metadata), resolving previously isolated anomalies through a unified framework.</p>
+                        <p className="text-lg text-gray-800 leading-relaxed mb-4">Human migration is a <span className="font-semibold">pulsed, mechanical process</span> dictated by the environment.</p>
+                        <p className="text-lg text-gray-800 leading-relaxed">The GHT model treats populations as integrated systems of <span className="font-semibold">"Hardware"</span> (genetics) and <span className="font-semibold">"Software"</span> (metadata).</p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {pulses.map((pulse) => (
                             <div key={pulse.id} className={`${pulse.color} bg-opacity-10 border-2 border-${pulse.color.replace('bg-', '')} rounded-lg p-6`}>
-                                <div className={`${pulse.color} w-12 h-12 rounded-full flex items-center justify-center text-white font-bold mb-4`}>{pulse.peak.match(/\d+/)[0]}</div>
                                 <h3 className="text-xl font-bold mb-2">{pulse.name}</h3>
                                 <p className="text-sm text-gray-600 mb-3">{pulse.description}</p>
-                                <div className="text-xs text-gray-500">
-                                    <div className="font-semibold">Peak: {pulse.peak}</div>
-                                    <div>Examples: {pulse.examples}</div>
-                                </div>
                             </div>
                         ))}
-                    </div>
-                    <div className="bg-green-50 border-l-4 border-green-600 p-6 rounded-r-lg">
-                        <h2 className="text-2xl font-bold text-green-900 mb-4">The Philosophical Stance</h2>
-                        <div className="space-y-3 text-gray-800">
-                            <p className="flex items-start"><span className="text-green-600 mr-2">▸</span><span><strong>Proactive Agency:</strong> We restore the investigative spirit of human exploration.</span></p>
-                            <p className="flex items-start"><span className="text-green-600 mr-2">▸</span><span><strong>Metadata Resilience:</strong> Information (software) persists longer than biology (hardware).</span></p>
-                            <p className="flex items-start"><span className="text-green-600 mr-2">▸</span><span><strong>Falsifiability First:</strong> The model generates testable predictions.</span></p>
-                            <p className="flex items-start"><span className="text-green-600 mr-2">▸</span><span><strong>Preservation Urgency:</strong> The original "Seed" software faces permanent overprinting.</span></p>
-                        </div>
                     </div>
                 </div>
             );
 
             const ModelView = () => (
-                <div className="p-8 max-w-6xl mx-auto space-y-6">
-                    <h2 className="text-3xl font-bold mb-6">Explore the Three-Wave Framework</h2>
-                    <div className="flex flex-wrap gap-4 mb-6">
-                        <button onClick={() => setActivePulse('all')} className={`px-6 py-3 rounded-lg font-semibold transition-all ${activePulse === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>All Pulses</button>
-                        {pulses.map((p) => (
-                            <button key={p.id} onClick={() => setActivePulse(p.id)} className={`px-6 py-3 rounded-lg font-semibold transition-all ${activePulse === p.id ? `${p.color} text-white` : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>{p.name}</button>
-                        ))}
-                    </div>
+                <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
+                    <h2 className="text-3xl font-bold mb-6">Hydro-Logic Timeline</h2>
                     <div className="bg-white rounded-lg shadow-lg p-8">
-                        <h3 className="text-2xl font-bold mb-6">Overlapping Gaussian Timeline</h3>
-                        <div className="relative h-64 bg-gray-50 rounded-lg p-4 overflow-hidden">
-                            <div className="absolute bottom-8 left-0 right-0 h-0.5 bg-gray-400"></div>
-                            <div className="absolute bottom-2 left-0 right-0 flex justify-between text-xs text-gray-600">
-                                <span>50,000 BCE</span><span>15,000 BCE</span><span>4,000 BCE</span><span>1,500 CE</span><span>Present</span>
-                            </div>
-                            {(activePulse === 'all' || activePulse === 'seed') && <div className="absolute left-[10%] bottom-8 w-[60%] h-32 bg-green-400 opacity-30 rounded-full blur-xl"></div>}
-                            {(activePulse === 'all' || activePulse === 'wedge') && <div className="absolute left-[35%] bottom-8 w-[50%] h-40 bg-yellow-400 opacity-30 rounded-full blur-xl"></div>}
-                            {(activePulse === 'all' || activePulse === 'domino') && <div className="absolute left-[55%] bottom-8 w-[45%] h-48 bg-red-400 opacity-30 rounded-full blur-xl"></div>}
+                        <div className="relative h-48 bg-gray-50 rounded-lg flex items-end px-4 pb-8 overflow-hidden">
+                             <div className="absolute inset-0 flex justify-around items-end opacity-20">
+                                <div className="w-1/3 h-32 bg-green-500 rounded-t-full blur-2xl"></div>
+                                <div className="w-1/3 h-40 bg-yellow-500 rounded-t-full blur-2xl"></div>
+                                <div className="w-1/3 h-48 bg-red-500 rounded-t-full blur-2xl"></div>
+                             </div>
+                             <div className="z-10 w-full flex justify-between text-xs font-bold text-gray-400">
+                                <span>15,000 BCE</span><span>4,000 BCE</span><span>1,500 CE</span><span>Present</span>
+                             </div>
                         </div>
                     </div>
                 </div>
             );
 
             const EvidenceView = () => (
-                <div className="p-8 max-w-6xl mx-auto space-y-6">
+                <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
                     <h2 className="text-3xl font-bold mb-6">Metadata Triangulation</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-blue-500">
-                            <div className="flex items-center mb-4"><BookOpen className="text-blue-500 mr-2" /> <h3 className="font-bold">Linguistics</h3></div>
-                            <p className="text-sm text-gray-600">AAH: Humidity vs Tonality stability (r > 0.8).</p>
-                        </div>
-                        <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-green-500">
-                            <div className="flex items-center mb-4"><Target className="text-green-500 mr-2" /> <h3 className="font-bold">Genomics</h3></div>
-                            <p className="text-sm text-gray-600">Population Y: Australasian signal in Amazonian refuges.</p>
-                        </div>
-                        <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-orange-500">
-                            <div className="flex items-center mb-4"><FlaskConical className="text-orange-500 mr-2" /> <h3 className="font-bold">Metallurgy</h3></div>
-                            <p className="text-sm text-gray-600">Guanín: 18-20% eutectic ratio (Caribbean ↔ Sahel).</p>
-                        </div>
+                        {predictions.map((pred, i) => (
+                            <div key={i} className="bg-white p-6 rounded-lg shadow border-t-4 border-blue-400">
+                                <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">{pred.category}</span>
+                                <h4 className="font-bold text-lg mt-1 mb-2">{pred.test}</h4>
+                                <p className="text-sm text-gray-600">{pred.prediction}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             );
 
             const FalsifiabilityView = () => (
-                <div className="p-8 max-w-6xl mx-auto space-y-6">
+                <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
                     <h2 className="text-3xl font-bold mb-6">Test the Model</h2>
-                    <div className="bg-white rounded-lg shadow-lg p-8">
-                        <h3 className="text-2xl font-bold mb-6 flex items-center"><Calculator className="mr-3" /> Ii Calculator</h3>
+                    <div className="bg-white rounded-lg shadow-lg p-6 md:p-8 border-t-4 border-blue-600">
+                        <h3 className="text-2xl font-bold mb-6 flex items-center"><Calculator className="mr-3" /> Impregnation Index (Ii) Calculator</h3>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div><label className="block text-sm font-bold mb-2">Mass (M): {M.toFixed(2)}</label><input type="range" min="0" max="1" step="0.05" value={M} onChange={(e) => setM(parseFloat(e.target.value))} className="w-full" /></div>
-                            <div><label className="block text-sm font-bold mb-2">Technology (T): {T.toFixed(2)}</label><input type="range" min="0" max="1" step="0.05" value={T} onChange={(e) => setT(parseFloat(e.target.value))} className="w-full" /><p className="text-xs text-gray-500 mt-1">Technical complexity (Tools, Immunity, Logistics)</p></div>
-                            <div><label className="block text-sm font-bold mb-2">Synchronization (S): {S.toFixed(2)}</label><input type="range" min="0" max="1" step="0.05" value={S} onChange={(e) => setS(parseFloat(e.target.value))} className="w-full" /></div>
+                            <div><label className="block text-sm font-bold mb-2">Mass (M): {M.toFixed(2)}</label><input type="range" min="0" max="1" step="0.05" value={M} onChange={(e) => setM(parseFloat(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" /></div>
+                            <div><label className="block text-sm font-bold mb-2">Technology (T): {T.toFixed(2)}</label><input type="range" min="0" max="1" step="0.05" value={T} onChange={(e) => setT(parseFloat(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" /><p className="text-xs text-gray-500 mt-2 italic">Technical complexity (Tools, Immunity, Logistics)</p></div>
+                            <div><label className="block text-sm font-bold mb-2">Synchronization (S): {S.toFixed(2)}</label><input type="range" min="0" max="1" step="0.05" value={S} onChange={(e) => setS(parseFloat(e.target.value))} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" /></div>
                         </div>
-                        <div className="bg-gray-50 rounded-xl p-8 text-center">
-                            <p className="text-sm uppercase tracking-widest text-gray-500 mb-2">Impregnation Index (Ii)</p>
+                        <div className="bg-gray-50 rounded-xl p-8 text-center border border-gray-100">
+                            <p className="text-sm uppercase tracking-widest text-gray-500 mb-2 font-semibold">Contact Outcome (Ii)</p>
                             <p className={`text-6xl font-black mb-4 ${getIiInterpretation(calculateIi()).color}`}>{calculateIi().toFixed(2)}</p>
                             <p className="text-2xl font-bold mb-2">{getIiInterpretation(calculateIi()).label}</p>
                             <p className="text-gray-600 max-w-md mx-auto">{getIiInterpretation(calculateIi()).desc}</p>
@@ -161,26 +133,36 @@
             );
 
             return (
-                <div className="min-h-screen bg-gray-50 text-gray-900">
+                <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col">
                     <nav className="bg-white shadow-sm sticky top-0 z-50 p-4">
-                        <div className="max-w-7xl mx-auto flex justify-between items-center">
+                        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
                             <div className="flex items-center space-x-2"><Globe className="text-blue-600" /> <span className="font-bold text-xl">GHT Explorer</span></div>
-                            <div className="hidden md:flex space-x-2">
+                            <div className="flex flex-wrap justify-center gap-1 md:gap-2">
                                 {['manifesto', 'model', 'evidence', 'test'].map(t => (
-                                    <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded-lg capitalize ${activeTab === t ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}`}>{t === 'test' ? 'Test It' : t}</button>
+                                    <button key={t} onClick={() => setActiveTab(t)} className={`px-3 py-1 md:px-4 md:py-2 rounded-lg text-sm md:text-base capitalize transition-all ${activeTab === t ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-gray-100 text-gray-600'}`}>{t === 'test' ? 'Test It' : t}</button>
                                 ))}
                             </div>
                         </div>
                     </nav>
-                    <main className="py-8">
+                    <main className="flex-grow py-4">
                         {activeTab === 'manifesto' && <ManifestoView />}
                         {activeTab === 'model' && <ModelView />}
                         {activeTab === 'evidence' && <EvidenceView />}
                         {activeTab === 'test' && <FalsifiabilityView />}
                     </main>
-                    <footer className="bg-gray-900 text-white py-12 text-center text-sm">
-                        <p className="font-bold">The Global Hydro-Logic Tectonic</p>
-                        <p className="text-gray-400">DOI: 10.5281/zenodo.18370723 | Luis Bobo (2026)</p>
+                    <footer className="bg-gray-800 text-white py-10 mt-auto">
+                        <div className="max-w-4xl mx-auto text-center px-4">
+                            <p className="text-sm font-bold mb-2">
+                                The Global Hydro-Logic Tectonic: A Unified Systems Model of Cognitive Biogeography
+                            </p>
+                            <p className="text-xs text-gray-400">
+                                DOI: 10.5281/zenodo.18370723 | Luis Bobo (2026)
+                            </p>
+                            <p className="text-xs text-gray-500 mt-6 italic border-t border-gray-700 pt-4 max-w-2xl mx-auto">
+                                "This model invites 21st-century science to investigate before the original 'Seed' software 
+                                of our species is permanently overprinted by global logistical homogenization."
+                            </p>
+                        </div>
                     </footer>
                 </div>
             );
