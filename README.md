@@ -30,5 +30,5 @@ License: Code (MIT) | Content (CC-BY-4.0)
   publisher = {Zenodo},
   version = {1.0.2},
   doi = {10.5281/zenodo.18434232},
-  url = {https://lsbogarc.github.io/ght-explorer/ght-explorer.html}
+  url = {https://lsbogarc.github.io/ght-explorer/ght-explorer.html
 }
