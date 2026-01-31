@@ -22,3 +22,13 @@ Pulse Taxonomy-
 Full Paper: [Zenodo DOI: 10.5281/zenodo.18370723](https://doi.org/10.5281/zenodo.18370723)
 
 License: Code (MIT) | Content (CC-BY-4.0)
+
+@software{bobo_ght_explorer_2026,
+  author = {Bobo, Luis},
+  title = {GHT Explorer: Interactive Impregnation Index (I_i) Simulator},
+  year = {2026},
+  publisher = {Zenodo},
+  version = {1.0.2},
+  doi = {10.5281/zenodo.18434232},
+  url = {https://lsbogarc.github.io/ght-explorer/ght-explorer.html}
+}
